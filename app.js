@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const exphbs = require('express-handlebars')
 const app = express()
 const port = 3000
 
@@ -12,8 +13,13 @@ db.on('error', () => {
 db.once('open', () => {
     console.log('mongodb connected!')
 })
+
+
+app.engine('hbs', exphbs.create({ defaultLayout: 'main', extname: '.hbs' }).engine)
+app.set('view engine', 'hbs')
+
 app.get('/', (req, res) => {
-    res.send('Expense Tracker ')
+    res.render('index')
 })
 
 app.listen(port, () => {
