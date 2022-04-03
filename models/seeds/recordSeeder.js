@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Record = require('../record')
+const recordData = require('./record.json').records
 
 mongoose.connect('mongodb://localhost/expense-tracker')
 const db = mongoose.connection
@@ -9,10 +10,5 @@ db.on('error', () => {
 })
 db.once('open', () => {
     console.log('mongodb connected!')
-    //test
-    Record.create({
-        name:'午餐',
-        date: "2022-03-28",
-        amount: 50
-    })
+    Record.create(recordData)
 })
