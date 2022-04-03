@@ -15,20 +15,22 @@
             <h1>25260</h1>
         </div>
     </div>
+    {{#each record}}
     <div class="row d-flex align-items-center">
         <div class="col-auto ">
             <i class="fa-solid fa-house fa-2xl"></i>
         </div>
         <div class="col-5 py-1 my-0">
-            <div class="col">Name</div>
-            <div class="col">Date</div>
+            <div class="col">{{this.name}}</div>
+            <div class="col">{{this.date}}</div>
         </div>
-        <div class="col-auto">Amount</div>
-        <div class="col-auto">
+        <div class="col-1 d-flex justify-content-end">{{this.amount}}</div>
+        <div class="col-3">
             <a href="" class="btn btn-secondary">Edit</a>
             <a href="" class="btn btn-danger">Delete</a>
         </div>
     </div>
+    {{/each}}
     <div class="col-8 mt-3 d-flex justify-content-center">
         <button type="submit" class="btn btn-primary">Create New</button>
     </div>
