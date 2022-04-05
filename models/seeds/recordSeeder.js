@@ -1,17 +1,13 @@
-const mongoose = require('mongoose')
 const Category = require('../category')
 const Record = require('../record')
 const recordList = require('./record.json').records
 const categoryList = require('./category.json').categories
 
-mongoose.connect('mongodb://localhost/expense-tracker')
-const db = mongoose.connection
 
-db.on('error', () => {
-    console.log('mongodb error!')
-})
+const db = require('../../config/mongoose')
+
 db.once('open', async () => {
-    console.log('mongodb connected!')
+    
 
     //Category.create(categoryList)
    
@@ -41,8 +37,7 @@ db.once('open', async () => {
                         const categoryName = categoryList.find(categories => categories.id === category_id).name
                         const categoryID = categoryData.find(category => categoryName === category.name)._id
 
-                        console.log(categoryID)
-
+                        
                         Record.create({
                             name: record.name,
                             date: record.date,
@@ -53,4 +48,5 @@ db.once('open', async () => {
                 })
                 .catch(err => console.log(err))
         })
+        console.log('recordSeeder generated!')
 })
