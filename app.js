@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
             categories.filter(category => {
                 categoryNames.push(category.name)
                 //console.log(category._id)
-               //console.log(category.icon)
+                //console.log(category.icon)
             })
             Record.find()
                 .populate('categoryId')//關聯Category資料庫
@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
                     //console.log(recordDatas)
                     //console.log(categoryNames)
                     //console.log(totalAmount)
-                    res.render('index', { record: recordDatas, categories: categoryNames, totalAmount})
+                    res.render('index', { record: recordDatas, categories: categoryNames, totalAmount })
                 })
         })
         .catch(err => console.log(err))
@@ -65,42 +65,75 @@ app.get('/', (req, res) => {
 app.get('/records/new', (req, res) => {
     const categoryNames = []
     Category.find()
-    .lean()
-    .then(categories => {
-        categories.filter(category => {
-            categoryNames.push(category.name)
+        .lean()
+        .then(categories => {
+            categories.filter(category => {
+                categoryNames.push(category.name)
+            })
+            console.log(categoryNames)
         })
-        console.log(categoryNames)
-    })
-    .catch(err => console.log(err))
-    
-    res.render('new' , {categories: categoryNames} )
+        .catch(err => console.log(err))
+
+    res.render('new', { categories: categoryNames })
 })
-app.post('/records',(req, res) =>{
+app.post('/records', (req, res) => {
     const { name, category, date, amount } = req.body
- 
-  Category.findOne({ name: category })
-    .lean()
-    .then(category => {
-      return Record.create({
-        name,
-        date,
-        amount,
-        categoryId: category._id
-      })
-    })
-    .then(() => res.redirect('/'))
-    .catch(err => console.log(err))
+
+    Category.findOne({ name: category })
+        .lean()
+        .then(category => {
+            return Record.create({
+                name,
+                date,
+                amount,
+                categoryId: category._id
+            })
+        })
+        .then(() => res.redirect('/'))
+        .catch(err => console.log(err))
 })
 app.get('/records/:id/edit', (req, res) => {
     const id = req.params.id
     return Record.findById(id)
-    .lean()
-    .then(record => {
-       res.render('edit', {record} )
-    })
-    .catch(err => console.log(err))
-    
+        .populate('categoryId')//關聯Category資料庫
+        .lean()
+        .then(record => {
+            const categoryNames = []
+            Category.find()
+                .lean()
+                .then(categories => {
+                    categories.filter(category => {
+                        if (category.name !== record.categoryId.name) {
+                            categoryNames.push(category.name)
+                        }
+                    })
+                })
+            res.render('edit', { record, categories: categoryNames })
+        })
+        .catch(err => console.log(err))
+})
+app.post('/records/:id/edit', (req, res) => {
+    const id = req.params.id
+    const { name, date, amount, category } = req.body
+    Category.findOne({ name: category })
+        .lean()
+        .then(category => {
+            Record.findById(id)
+                .then(record => {
+                    console.log(record)
+                    record.name = name
+                    record.date = date
+                    record.amount = amount
+                    record.categoryId = category._id
+                    return record.save()
+                    
+                })
+                .then(() => res.redirect('/'))
+                .catch(err => console.log(err))
+
+        })
+
+
 })
 
 app.listen(port, () => {
