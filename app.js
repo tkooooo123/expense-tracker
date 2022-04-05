@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
 
 const Record = require('./models/record')
 const Category = require('./models/category')
@@ -25,6 +26,7 @@ app.engine('hbs', exphbs.create({ defaultLayout: 'main', extname: '.hbs' }).engi
 app.set('view engine', 'hbs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
 
 app.get('/', (req, res) => {
     const categoryNames = []
