@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
 
 const Record = require('./models/record')
 const Category = require('./models/category')
@@ -22,6 +23,8 @@ db.once('open', () => {
 
 app.engine('hbs', exphbs.create({ defaultLayout: 'main', extname: '.hbs' }).engine)
 app.set('view engine', 'hbs')
+
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
     const categoryNames = []
@@ -73,7 +76,22 @@ app.get('/records/new', (req, res) => {
     
     res.render('new' , {categories: categoryNames} )
 })
-
+app.post('/records',(req, res) =>{
+    const { name, category, date, amount } = req.body
+ 
+  Category.findOne({ name: category })
+    .lean()
+    .then(category => {
+      return Record.create({
+        name,
+        date,
+        amount,
+        categoryId: category._id
+      })
+    })
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err))
+})
 
 app.listen(port, () => {
     console.log('App is running on http://localhost:3000')
