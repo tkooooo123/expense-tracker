@@ -3,10 +3,9 @@ const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+const routes = require('./routes')
 
-const Record = require('./models/record')
-const Category = require('./models/category')
-const category = require('./models/category')
+
 
 const app = express()
 const port = 3000
@@ -27,123 +26,12 @@ app.set('view engine', 'hbs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
-
-app.get('/', (req, res) => {
-    const categoryNames = []
-    const recordDatas = []
-    Category.find()
-        .lean()
-        .then(categories => {
-            categories.filter(category => {
-                categoryNames.push(category.name)
-                //console.log(category._id)
-                //console.log(category.icon)
-            })
-            Record.find()
-                .populate('categoryId')//關聯Category資料庫
-                .lean()
-                .then(records => {
-                    let totalAmount = 0
-                    records.forEach(record => {
-                        //console.log(record.categoryId)
-                        totalAmount += record.amount
-
-                        recordDatas.push({
-                            id: record._id,
-                            name: record.name,
-                            date: record.date,
-                            amount: record.amount,
-                            icon: record.categoryId.icon
-                        })
-                    })
-                    //console.log(recordDatas)
-                    //console.log(categoryNames)
-                    //console.log(totalAmount)
-                    res.render('index', { record: recordDatas, categories: categoryNames, totalAmount })
-                })
-        })
-        .catch(err => console.log(err))
-})
-app.get('/records/new', (req, res) => {
-    const categoryNames = []
-    Category.find()
-        .lean()
-        .then(categories => {
-            categories.filter(category => {
-                categoryNames.push(category.name)
-            })
-            console.log(categoryNames)
-        })
-        .catch(err => console.log(err))
-
-    res.render('new', { categories: categoryNames })
-})
-app.post('/records', (req, res) => {
-    const { name, category, date, amount } = req.body
-
-    Category.findOne({ name: category })
-        .lean()
-        .then(category => {
-            return Record.create({
-                name,
-                date,
-                amount,
-                categoryId: category._id
-            })
-        })
-        .then(() => res.redirect('/'))
-        .catch(err => console.log(err))
-})
-app.get('/records/:id/edit', (req, res) => {
-    const id = req.params.id
-    return Record.findById(id)
-        .populate('categoryId')//關聯Category資料庫
-        .lean()
-        .then(record => {
-            const categoryNames = []
-            Category.find()
-                .lean()
-                .then(categories => {
-                    categories.filter(category => {
-                        if (category.name !== record.categoryId.name) {
-                            categoryNames.push(category.name)
-                        }
-                    })
-                })
-            res.render('edit', { record, categories: categoryNames })
-        })
-        .catch(err => console.log(err))
-})
-app.post('/records/:id/edit', (req, res) => {
-    const id = req.params.id
-    const { name, date, amount, category } = req.body
-    Category.findOne({ name: category })
-        .lean()
-        .then(category => {
-            Record.findById(id)
-                .then(record => {
-                    console.log(record)
-                    record.name = name
-                    record.date = date
-                    record.amount = amount
-                    record.categoryId = category._id
-                    return record.save()
-                    
-                })
-                .then(() => res.redirect('/'))
-                .catch(err => console.log(err))
-
-        })
+app.use(routes)
 
 
-})
-app.post('/records/:id/delete', (req, res) => {
-    const id = req.params.id
-    return Record.findById(id)
-    .then(record => record.remove())
-    .then(() => res.redirect('/'))
-    .catch(err => console.log(err))
-})
+
+
+
 
 app.listen(port, () => {
     console.log('App is running on http://localhost:3000')
