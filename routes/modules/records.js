@@ -18,6 +18,7 @@ router.get('/new', (req, res) => {
     res.render('new', { categories: categoryNames })
 })
 router.post('/', (req, res) => {
+    const userId = req.user._id
     const { name, category, date, amount } = req.body
 
     Category.findOne({ name: category })
@@ -27,7 +28,8 @@ router.post('/', (req, res) => {
                 name,
                 date,
                 amount,
-                categoryId: category._id
+                categoryId: category._id,
+                userId
             })
         })
         .then(() => res.redirect('/'))
@@ -35,8 +37,9 @@ router.post('/', (req, res) => {
 })
 
 router.get('/:id/edit', (req, res) => {
+    const userId = req.user._id
     const id = req.params.id
-    return Record.findById(id)
+    return Record.findOne({ id, userId })
         .populate('categoryId')//關聯Category資料庫
         .lean()
         .then(record => {
@@ -55,14 +58,14 @@ router.get('/:id/edit', (req, res) => {
         .catch(err => console.log(err))
 })
 router.put('/:id', (req, res) => {
+    const userId = req.user._id
     const id = req.params.id
     const { name, date, amount, category } = req.body
     Category.findOne({ name: category })
         .lean()
         .then(category => {
-            Record.findById(id)
+            Record.findOne({ id, userId })
                 .then(record => {
-                    console.log(record)
                     record.name = name
                     record.date = date
                     record.amount = amount
@@ -74,11 +77,12 @@ router.put('/:id', (req, res) => {
         })
 })
 router.delete('/:id', (req, res) => {
+    const userId = req.user._id
     const id = req.params.id
-    return Record.findById(id)
-    .then(record => record.remove())
-    .then(() => res.redirect('/'))
-    .catch(err => console.log(err))
+    return Record.findOne({ id, userId })
+        .then(record => record.remove())
+        .then(() => res.redirect('/'))
+        .catch(err => console.log(err))
 })
 
 module.exports = router

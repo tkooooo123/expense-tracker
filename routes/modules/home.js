@@ -4,6 +4,7 @@ const Record = require('../../models/record')
 const Category = require('../../models/category')
 
 router.get('/', (req, res) => {
+    const userId = req.user._id
     const categoryNames = []
     const recordDatas = []
     Category.find()
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
                 //console.log(category._id)
                 //console.log(category.icon)
             })
-            Record.find()
+            Record.find({userId})
                 .populate('categoryId')//關聯Category資料庫
                 .lean()
                 .then(records => {
