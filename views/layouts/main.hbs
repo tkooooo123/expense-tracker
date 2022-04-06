@@ -13,7 +13,7 @@
 </head>
 <nav class="navbar navbar-light bg-light">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">{{#if isAuthenticated}}{{ user.name}}的{{/if}}記帳本</span>
+    <a class="navbar-brand mb-0 h1" href="/">{{#if isAuthenticated}}{{ user.name}}的{{/if}}記帳本</a>
     {{#if isAuthenticated}}
     <a href="/users/logout" class="btn btn-outline-primary">Logout</a>
     {{else}}
