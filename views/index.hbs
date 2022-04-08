@@ -1,11 +1,28 @@
 <div class="container mt-3 col-6">
     <div class="col-7">
-        <select class="form-select" aria-label="Default select example">
+        <form action="/" method="POST">
+         <select class="form-select" aria-label="Default select example" name="selectedCategory" onchange="this.form.submit()">
+            {{#if selectedCategory}}
+            <option value="{{selectedCategory._id}}" selected>{{selectedCategory.name}}</option>
+            <option value="">全部類別</option>
+            {{#each notSelectedCategories}}
+            <option value="{{this._id}}">{{this.name}}</option>
+            {{/each}}
+
+
+
+            
+            
+            {{else}}
+            
             <option selected>類別</option>
             {{#each categories}}
-            <option>{{this}}</option>
+            <option value="{{this._id}}">{{this.name}}</option>
             {{/each}}
+            {{/if}}
         </select>
+        </form>
+       
     </div>
     <div class="row d-flex justify-content-center">
         <div class="mt-4">
@@ -15,10 +32,10 @@
             <h1>{{ totalAmount }}</h1>
         </div>
     </div>
-    {{#each record}}
+    {{#each records}}
     <div class="row d-flex align-items-center">
         <div class="col-1 ">
-            <i class="{{this.icon}} fa-2xl"></i>
+            <i class="{{this.categoryId.icon}} fa-2xl"></i>
         </div>
         <div class="col-5 py-1 my-0">
             <div class="col">{{this.name}}</div>
@@ -26,8 +43,8 @@
         </div>
         <div class="col-1 d-flex justify-content-end">{{this.amount}}</div>
         <div class="col-3">
-            <a href="/records/{{this.id}}/edit" class="btn btn-secondary">Edit</a>
-            <form action="/records/{{this.id}}?_method=DELETE" method="POST" style="display: inline">
+            <a href="/records/{{this._id}}/edit" class="btn btn-secondary">Edit</a>
+            <form action="/records/{{this._id}}?_method=DELETE" method="POST" style="display: inline">
             <button type="submit" class="btn btn-danger">Delete</button>
             </form>
             
