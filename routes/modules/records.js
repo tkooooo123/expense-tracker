@@ -40,6 +40,7 @@ router.get('/:id/edit', (req, res) => {
         .lean()
         .then(record => {
             const categoryNames = []
+            record.date = record.date.toISOString().slice(0, 10)
             Category.find()
                 .lean()
                 .then(categories => {

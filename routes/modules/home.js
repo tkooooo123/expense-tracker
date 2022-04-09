@@ -17,6 +17,8 @@ router.get('/', (req, res) => {
                     let totalAmount = 0
                     records.forEach(record => {
                         totalAmount += record.amount
+                        record.date = record.date.toISOString().slice(0, 10)
+                        //Date.toISOString() 轉換時間格式
                     })
                     res.render('index', { records, categories, totalAmount })
                 })
@@ -43,6 +45,7 @@ router.post('/', (req, res) => {
                             records.forEach(record => {
                                 //console.log(record.categoryId)
                                 totalAmount += record.amount
+                                record.date = record.date.toISOString().slice(0, 10)
                             })
                             res.render('index', { records, selectedCategory , notSelectedCategories , totalAmount })
                         })
