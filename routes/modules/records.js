@@ -4,24 +4,20 @@ const Record = require('../../models/record')
 const Category = require('../../models/category')
 
 router.get('/new', (req, res) => {
-    const categoryNames = []
+    
     Category.find()
         .lean()
         .then(categories => {
-            categories.filter(category => {
-                categoryNames.push(category.name)
-            })
-            console.log(categoryNames)
+            res.render('new', { categories })
         })
         .catch(err => console.log(err))
 
-    res.render('new', { categories: categoryNames })
+   
 })
 router.post('/', (req, res) => {
     const userId = req.user._id
     const { name, category, date, amount } = req.body
-
-    Category.findOne({ name: category })
+    Category.findOne({ _id: category })
         .lean()
         .then(category => {
             return Record.create({
