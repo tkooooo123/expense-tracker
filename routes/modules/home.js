@@ -43,7 +43,6 @@ router.post('/', (req, res) => {
                         .then(records => {
                             let totalAmount = 0
                             records.forEach(record => {
-                                //console.log(record.categoryId)
                                 totalAmount += record.amount
                                 record.date = record.date.toISOString().slice(0, 10)
                             })

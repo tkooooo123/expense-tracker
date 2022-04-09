@@ -4,15 +4,12 @@ const Record = require('../../models/record')
 const Category = require('../../models/category')
 
 router.get('/new', (req, res) => {
-    
     Category.find()
         .lean()
         .then(categories => {
             res.render('new', { categories })
         })
         .catch(err => console.log(err))
-
-   
 })
 router.post('/', (req, res) => {
     const userId = req.user._id
