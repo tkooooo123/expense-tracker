@@ -1,5 +1,7 @@
 # 我的記帳本
 紀錄日常生活中食衣住行等各種開銷支出
+![image](https://github.com/tkooooo123/expense-tracker/blob/master/photos/photo1.JPG)
+![image](https://github.com/tkooooo123/expense-tracker/blob/master/photos/photo2.JPG)
 ## 功能
 - 可以註冊帳號或使用Facebook認證並登入操作
 - 瀏覽所有支出紀錄
