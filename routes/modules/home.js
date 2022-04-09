@@ -36,7 +36,6 @@ router.post('/', (req, res) => {
             Category.findById(selectedCategory)
                 .lean()
                 .then(selectedCategory => {
-                    console.log(selectedCategory.id)
                     Record.find({ userId, categoryId: selectedCategory })
                         .populate('categoryId')//關聯Category資料庫
                         .lean()
