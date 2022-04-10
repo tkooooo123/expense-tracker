@@ -32,12 +32,10 @@ db.once('open', () => {
             }))
             .then((user) => {
                  return Promise.all(Array.from(seedUser.records, (records, i) => {
-                    console.log(records)
                     const { name, date, amount, category_id, userId } = records
                     const categoryName = categoryList.find(categories => categories.id === records.category_id).name
                     return Category.findOne({ name: categoryName })
                         .then(category => {
-                            console.log(category)
                             return User.findOne({ email: seedUser.email })
                                 .then(user => {
                                     return Record.create({
