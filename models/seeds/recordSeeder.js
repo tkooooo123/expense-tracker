@@ -8,32 +8,21 @@ const bcrypt = require('bcryptjs/dist/bcrypt')
 const user = require('../user')
 const SEED_USERS = [
     {
-        name:'廣志',
-        email:'user1@example.com',
-        password:'12345678',
+        name: '廣志',
+        email: 'user1@example.com',
+        password: '12345678',
         records: recordList.slice(0, 3).concat(recordList[4])
     },
     {
-        name:'小新',
-        email:'user2@example.com',
-        password:'12345678',
+        name: '小新',
+        email: 'user2@example.com',
+        password: '12345678',
         records: recordList.slice(3, 4)
     },
 ]
-
-db.once('open', async () => {
-        await Promise.all(
-            categoryList.map(async category => {
-                const { name, icon} = category
-
-                const categoryData = await Category.findOne({name})
-                if (!categoryData) {
-                    await Category.create( {name, icon} )
-                }
-            })
-        )
-        Promise.all(Array.from(SEED_USERS, seedUser => {
-            return bcrypt
+db.once('open', () => {
+    Promise.all(Array.from(SEED_USERS, seedUser => {
+        return bcrypt
             .genSalt(10)
             .then(salt => bcrypt.hash(seedUser.password, salt))
             .then(hash => User.create({
@@ -42,25 +31,30 @@ db.once('open', async () => {
                 password: hash
             }))
             .then((user) => {
-                Category.find()
-                    .lean()
-                    .then(categoryData => {
-                        seedUser.records.forEach(record => {
-                            const { name, date, amount, category_id, userId } = record
-                            const categoryName = categoryList.find(categories => categories.id === category_id).name
-                            const categoryID = categoryData.find(category => categoryName === category.name)._id
-                            const seedUserId = user._id
-                            Record.create({
-                                name: record.name,
-                                date: record.date,
-                                amount: record.amount,
-                                categoryId: categoryID,
-                                userId: seedUserId
-                            })
+                 return Promise.all(Array.from(seedUser.records, (records, i) => {
+                    console.log(records)
+                    const { name, date, amount, category_id, userId } = records
+                    const categoryName = categoryList.find(categories => categories.id === records.category_id).name
+                    return Category.findOne({ name: categoryName })
+                        .then(category => {
+                            console.log(category)
+                            return User.findOne({ email: seedUser.email })
+                                .then(user => {
+                                    return Record.create({
+                                        name: records.name,
+                                        date: records.date,
+                                        amount: records.amount,
+                                        categoryId: category._id,
+                                        userId: user.id
+                                    })
+                                })
                         })
-                    })
+                }))
                     .catch(err => console.log(err))
             })
-        }))
-        console.log('recordSeeder generated!')
+    }))
+        .then(() => {
+            console.log('recordSeeder generated!')
+            process.exit()
+        })
 })

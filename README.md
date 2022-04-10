@@ -26,6 +26,7 @@
    ```
    成功則顯示：
    ```Bash
+   categorySeeder genegrated!
    recordSeeder generated!
    ```
 5. 移除`.env.example`資料之副檔名`.example`，並設定環境變數資訊  
