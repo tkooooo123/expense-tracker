@@ -32,22 +32,20 @@ router.post('/', (req, res) => {
 router.get('/:id/edit', (req, res) => {
     const userId = req.user._id
     const id = req.params.id
-    return Record.findOne({ id, userId })
+
+    console.log(id)
+    Record.findOne({ _id: id, userId })
         .populate('categoryId')//關聯Category資料庫
         .lean()
         .then(record => {
+            console.log(record)
             const categoryNames = []
             record.date = record.date.toISOString().slice(0, 10)
-            Category.find()
+            Category.find({ _id: { $ne: record.categoryId } })
                 .lean()
                 .then(categories => {
-                    categories.filter(category => {
-                        if (category.name !== record.categoryId.name) {
-                            categoryNames.push(category.name)
-                        }
-                    })
+                    res.render('edit', { record, categories })
                 })
-            res.render('edit', { record, categories: categoryNames })
         })
         .catch(err => console.log(err))
 })
