@@ -32,14 +32,11 @@ router.post('/', (req, res) => {
 router.get('/:id/edit', (req, res) => {
     const userId = req.user._id
     const id = req.params.id
-
-    console.log(id)
     Record.findOne({ _id: id, userId })
         .populate('categoryId')//關聯Category資料庫
         .lean()
         .then(record => {
             console.log(record)
-            const categoryNames = []
             record.date = record.date.toISOString().slice(0, 10)
             Category.find({ _id: { $ne: record.categoryId } })
                 .lean()
